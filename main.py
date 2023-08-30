@@ -7,49 +7,53 @@ from PIL import Image
 
 
 
-#TODO: I am going to make it work for video, then abstract the code into a function and set up scenes where the user uploads either a video or an image (and even other files to be handled as an error).
 
-
+pic = cv2.imread('resources/photos/street.jpg')
+pic = cv2.resize(pic, (0, 0), fx = 0.25, fy = 0.25)
 video = cv2.VideoCapture('resources/videos/dog.mp4')
-    
-while True:
-    ret, frame = video.read()
-        
-        #Checking for the end or if video not read correctly
-    if not ret:
-        break;
-        
-        #to gray
-    #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    
-    #getting processor and model
+ 
+ #INFO: passing in images to process them in model.
+  
+def detection(pic):
     processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-50")
     model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-50")
     
-    #FIXME: try converting this PILimage color channel to rgb and run again
-    #processing the inputs
-    inputs = processor(images=frame,return_tensors='pt')
+    #converting the opencv image back to pil type that is compatible with the model.
+    pil_image = Image.fromarray(cv2.cvtColor(pic, cv2.COLOR_BGR2RGB))
+    
+    inputs = processor(images=pil_image,return_tensors='pt')
     outputs= model(**inputs)
     
     #converting outputs back to useful output
     #obtaining original sizes
-    target_sizes = torch.tensor([frame.size[::-1]])
+    target_sizes = torch.tensor([pil_image.size[::-1]])
     #processing output, thresholding and fitting setting target sizes
-    results = processor.post_process_object_detection(outputs,target_sizes=target_sizes,threshhold=0.9)[0]
+    results = processor.post_process_object_detection(outputs,target_sizes=target_sizes,threshold=0.9)[0]
+    
     
     for score,label,box in zip(results["scores"], results["labels"],results["boxes"]):
+        #to obtain dimensions of detected image
         box = [round(i,2) for i in box.tolist()]
-        print(f'Detected {model.config.id2label[label.item()]} with confidence:' f'{round(score.item(),3)} at location {box}')
-        
-    #cv2.imshow('Dog',gray)
-    
-    if(cv2.waitKey(20) & 0xFF==ord('q')):
-        break;
-    
-#FIXME: this can not work. Opencv is mean to edit the picture and add shapes to the objects. I have to detect objects in each frame, pass them to the model for pediction. Use ouput from model to draw shape on them using opencv. Then at the end display the model as output video format. 
+        start = (int(box[0]),int(box[1]))
+        end = (int(box[2]),int(box[3]))
+        cv2.rectangle(pic,start,end,(0,255,0),thickness=2)
+        cv2.putText(pic,model.config.id2label[label.item()],(int(box[0]),int(box[3])),cv2.FONT_HERSHEY_COMPLEX,fontScale=0.5,color=(255,255,255),thickness=1)
+        # print(f'Detected {model.config.id2label[label.item()]} with confidence:' f'{round(score.item(),3)} at location {box}')
+    cv2.imshow('Street',pic)
+    cv2.waitKey(0)
 
-#NOTE: I think it's best if I do it purely offline before running it online. That is use purely open CV. once it works offline, I ship everything to the net using streamlit.
-        
-        
-        
+#INFO: to process videos  
+      
+def processing_video(video):
+    while True:
+        ret, frame = video.read()
+        #Checking for the end or if video not read correctly
+        if not ret:
+            break;
+    
+        if(cv2.waitKey(20) & 0xFF==ord('q')):
+            break;
+
+
+detection(pic)
         
