@@ -10,7 +10,7 @@ from PIL import Image
 
 pic = cv2.imread('resources/photos/street.jpg')
 pic = cv2.resize(pic, (0, 0), fx = 0.25, fy = 0.25)
-video = cv2.VideoCapture('resources/videos/dog.mp4')
+video = cv2.VideoCapture('resources/videos/kitten.mp4')
  
  #INFO: passing in images to process them in model.
   
@@ -54,12 +54,14 @@ def processing_video(video):
         #Checking for the end or if video not read correctly
         if not ret:
             break;
-    
-        if(cv2.waitKey(20) & 0xFF==ord('q')):
+        detection(frame)
+        if(0xFF == ord('q')):
+        #if (cv2.waitKey(1) & 0xFF == ord('q')):
             break;
 
 
 #detection(pic)
+processing_video(video)
 #TODO: 
 # 1. Create algorithm to generate different colors for particular category of objects
 # 1.1 Position the boxes better than they are now, same for the text
