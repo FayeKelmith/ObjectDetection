@@ -32,6 +32,10 @@ def detection(pic):
     
     
     for score,label,box in zip(results["scores"], results["labels"],results["boxes"]):
+        #FIXME:
+        #Algorithm to generate different colors for different objects on scene
+        
+        
         #to obtain dimensions of detected image
         box = [round(i,2) for i in box.tolist()]
         start = (int(box[0]),int(box[1]))
@@ -55,5 +59,12 @@ def processing_video(video):
             break;
 
 
-detection(pic)
+#detection(pic)
+#TODO: 
+# 1. Create algorithm to generate different colors for particular category of objects
+# 1.1 Position the boxes better than they are now, same for the text
+# 2. Test the video function and optimize it
+# 3. Check on how to optimize speed or when to introduce live video
+# 4. Connect it with streamlit
+# 5. Try deployment again
         
