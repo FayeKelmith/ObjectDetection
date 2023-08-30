@@ -1,6 +1,6 @@
 import streamlit as st 
 
-st.title("Object Detection using DETR model with ResNet-50 backbone")
+st.title("Object Detection using DETR model with ResNet-50 backbone trained on the Coco 2017 dataset")
 
 st.header('You can upload a video or stream one')
 st.divider()

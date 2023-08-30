@@ -1,6 +1,7 @@
-# transformers
-# torch
-# numpy
+transformers
+torch
+numpy
 Pillow
 opencv-python
 streamlit
+timm
