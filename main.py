@@ -1,7 +1,5 @@
 from transformers import DetrImageProcessor, DetrForObjectDetection 
-import torch 
-from PIL import Image 
-import app
+import torch  
 import random
 import cv2 
 from PIL import Image
@@ -9,8 +7,7 @@ from PIL import Image
 
 
 
-pic = cv2.imread('resources/photos/street.jpg')
-pic = cv2.resize(pic, (0, 0), fx = 0.2, fy = 0.2)
+
 
 #INFO: passing in images to process them in model.
 def random_color():
@@ -45,20 +42,19 @@ def detection(pic):
         if label not in colors:
             col =  random_color()
             colors[label] = col
-        #to obtain dimensions of detected image
-            cv2.rectangle(pic,start,end,col,thickness=2)
+            #to obtain dimensions of detected image
         
-        cv2.putText(pic,model.config.id2label[label.item()],(int(box[0]),int(box[3])-5),cv2.FONT_HERSHEY_COMPLEX,fontScale=0.4,color=(255,255,255),thickness=1)
+        cv2.rectangle(pic,start,end,colors[label],thickness=2)
+        cv2.putText(pic,model.config.id2label[label.item()],(int(box[0]),int(box[3])-5),cv2.FONT_HERSHEY_COMPLEX,fontScale=0.4,color=(205,205,205),thickness=1)
         # print(f'Detected {model.config.id2label[label.item()]} with confidence:' f'{round(score.item(),3)} at location {box}')
-    
-    cv2.imshow('Street',pic)
-    cv2.waitKey(0)
+        
+    return pic
 
 #INFO: to process videos  
       
 
 
-detection(pic)
+#detection(pic)
 
 #TODO: 
 # 1. Create algorithm to generate different colors for particular category of objects
